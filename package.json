@@ -4,7 +4,7 @@
   "description": "A koa-based URL shortener",
   "main": "lib/index.js",
   "scripts": {
-    "build":"tsc",
+    "build": "tsc",
     "test": "jest"
   },
   "repository": {
@@ -22,7 +22,9 @@
     "url": "https://github.com/LonnyGomes/urly/issues"
   },
   "homepage": "https://github.com/LonnyGomes/urly#readme",
-  "dependencies": {},
+  "dependencies": {
+    "dotenv": "^8.2.0"
+  },
   "devDependencies": {
     "typescript": "^3.9.5"
   }
