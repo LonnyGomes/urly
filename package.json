@@ -4,6 +4,8 @@
   "description": "A koa-based URL shortener",
   "main": "lib/index.js",
   "scripts": {
+    "start": "node ./lib/index.js",
+    "start:dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "build": "tsc",
     "test": "jest"
   },
@@ -31,7 +33,9 @@
     "@types/koa": "^2.11.3",
     "@types/node": "^14.0.13",
     "jest": "^26.0.1",
+    "nodemon": "^2.0.4",
     "ts-jest": "^26.1.0",
+    "ts-node": "^8.10.2",
     "typescript": "^3.9.5"
   }
 }
