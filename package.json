@@ -1,0 +1,24 @@
+{
+  "name": "urly",
+  "version": "0.0.1",
+  "description": "A koa-based URL shortener",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LonnyGomes/urly.git"
+  },
+  "keywords": [
+    "koa",
+    "typescript",
+    "url"
+  ],
+  "author": "Lonny Gomes",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LonnyGomes/urly/issues"
+  },
+  "homepage": "https://github.com/LonnyGomes/urly#readme"
+}
