@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 import { Context, Next } from 'koa';
+import helmet from 'koa-helmet';
 
 dotenv.config();
 
@@ -7,6 +8,9 @@ const PORT = process.env.PORT || 3000;
 
 const Koa = require('koa');
 const app = new Koa();
+
+// Provides important security headers to make your app more secure
+app.use(helmet());
 
 // logger
 
