@@ -1,5 +1,7 @@
 # urly
 
+![Node.js CI](https://github.com/LonnyGomes/urly/workflows/Node.js%20CI/badge.svg)
+
 Proof of concept url shortener
 
 This project uses [Koa](https://koajs.com) to implement a light-weight URL shortener service.
