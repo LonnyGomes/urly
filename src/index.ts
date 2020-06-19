@@ -1,5 +1,7 @@
 import * as dotenv from 'dotenv';
 import { Context, Next } from 'koa';
+import serve from 'koa-static';
+import mount from 'koa-mount';
 import helmet from 'koa-helmet';
 
 dotenv.config();
@@ -29,11 +31,8 @@ app.use(async (ctx: Context, next: Next) => {
     ctx.set('X-Response-Time', `${ms}ms`);
 });
 
-// response
-
-app.use(async (ctx: Context) => {
-    ctx.body = 'Hello World';
-});
+// map base URL to html content
+app.use(mount('/', serve('./app/')));
 
 console.log(`Server started on on port ${PORT}`);
 
