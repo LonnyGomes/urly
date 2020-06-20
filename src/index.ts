@@ -4,6 +4,8 @@ import bodyParser from 'koa-bodyparser';
 import serve from 'koa-static';
 import mount from 'koa-mount';
 import helmet from 'koa-helmet';
+import Router from '@koa/router';
+import { apiRouter } from './controllers/api.controller';
 
 dotenv.config();
 
@@ -37,6 +39,15 @@ app.use(async (ctx: Context, next: Next) => {
 
 // map base URL to html content
 app.use(mount('/', serve('./app/')));
+
+// create koa router
+const router = new Router();
+
+// add api controller endpoints
+router.use('/api', apiRouter.routes(), apiRouter.allowedMethods());
+
+// add router middleware to app
+app.use(router.routes()).use(router.allowedMethods());
 
 console.log(`Server started on on port ${PORT}`);
 
