@@ -6,6 +6,7 @@ import mount from 'koa-mount';
 import helmet from 'koa-helmet';
 import Router from '@koa/router';
 import { apiRouter } from './controllers/api.controller';
+import { rootRouter } from './controllers/root.controller';
 
 dotenv.config();
 
@@ -45,6 +46,9 @@ const router = new Router();
 
 // add api controller endpoints
 router.use('/api', apiRouter.routes(), apiRouter.allowedMethods());
+
+// add root controller middleware
+router.use(rootRouter.routes(), rootRouter.allowedMethods());
 
 // add router middleware to app
 app.use(router.routes()).use(router.allowedMethods());
