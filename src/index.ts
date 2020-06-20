@@ -21,6 +21,25 @@ app.use(bodyParser());
 // Provides important security headers to make your app more secure
 app.use(helmet());
 
+// Handle 404/errors
+app.use(async (ctx: Context, next: Next) => {
+    // derived from the following SO solution:
+    // https://stackoverflow.com/questions/37009352/how-to-handle-a-404-in-koa-2
+    try {
+        await next();
+        const status = ctx.status || 404;
+        if (status === 404) {
+            ctx.throw(404);
+        }
+    } catch (err) {
+        ctx.status = err.status || 500;
+        if (ctx.status === 404) {
+            await ctx.redirect('/404.html');
+        } else {
+            await ctx.redirect('/error.html');
+        }
+    }
+});
 // logger
 
 app.use(async (ctx: Context, next: Next) => {
