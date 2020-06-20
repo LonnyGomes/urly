@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 import { Context, Next } from 'koa';
+import bodyParser from 'koa-bodyparser';
 import serve from 'koa-static';
 import mount from 'koa-mount';
 import helmet from 'koa-helmet';
@@ -10,6 +11,9 @@ const PORT = process.env.PORT || 3000;
 
 const Koa = require('koa');
 const app = new Koa();
+
+// Add body parser to handle POST request data
+app.use(bodyParser());
 
 // Provides important security headers to make your app more secure
 app.use(helmet());
