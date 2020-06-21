@@ -36,6 +36,7 @@ app.use(async (ctx: Context, next: Next) => {
         if (ctx.status === 404) {
             await ctx.redirect('/404.html');
         } else {
+            console.error('Encounters internal error', err);
             await ctx.redirect('/error.html');
         }
     }
