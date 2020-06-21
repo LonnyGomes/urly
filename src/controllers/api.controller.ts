@@ -1,4 +1,4 @@
-import { Context } from 'koa';
+import { Context, Next } from 'koa';
 
 import Router from '@koa/router';
 
@@ -28,6 +28,18 @@ export class ApiController {
             shortUrl: `https://baseurl.me/${shortId}`, // TEMP implementation
         };
     }
+
+    public static async invalidMessage(
+        ctx: Context,
+        next: Next
+    ): Promise<void> {
+        if (ctx.status === 404) {
+            ctx.status = 200;
+            ctx.body = { status: false, message: 'Invalid endpoint' };
+        } else {
+            await next();
+        }
+    }
 }
 
 // Define API routes
@@ -35,3 +47,5 @@ export const apiRouter = new Router();
 
 apiRouter.get('/url/:fullUrl', ApiController.getUrl);
 apiRouter.post('/url/', ApiController.postUrl);
+apiRouter.all('/(.*)', ApiController.invalidMessage);
+apiRouter.all('/(.*)/(.*)', ApiController.invalidMessage);

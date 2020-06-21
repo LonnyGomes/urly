@@ -27,7 +27,7 @@ PORT=3030 npm run start:dev
 
 This is basic REST API documentation. We eventually will move this to use swagger.
 
-> **NOTE:** For now, any root URL that does not match a path in the `/app` folder will be redirected to Google. Once an implementation is in place, this will change. As a test, navigate to http://localhost:3000/cafe1234.
+> **NOTE:** For now, any URL that matches a 6 digit hexadecimal hash (/[a-z0-9])will be redirected to google.com. Once an implementation is in place, this will change. As a test, navigate to http://localhost:3000/cafe12.
 
 ### GET /url/:shortId
 
