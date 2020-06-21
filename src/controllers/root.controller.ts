@@ -1,9 +1,9 @@
-import { Context } from 'koa';
+import { Context, Next } from 'koa';
 
 import Router from '@koa/router';
 
 export class RootController {
-    public static async expandUrl(ctx: Context): Promise<void> {
+    public static async expandUrl(ctx: Context, next: Next): Promise<void> {
         const { shortId } = ctx.params;
 
         // TODO: check for shortId mapping
@@ -11,7 +11,13 @@ export class RootController {
         console.log(`shortId param: ${shortId}`);
 
         //TODO: if not found, redirect to a 404 page
-        ctx.redirect(fullUrl);
+        //      for now, just run a regEx
+        if (shortId && shortId.match(/^[a-f0-9]{6}$/i)) {
+            ctx.redirect(fullUrl);
+        } else {
+            ctx.status = 404;
+            next();
+        }
     }
 }
 
