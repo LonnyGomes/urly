@@ -1,8 +1,8 @@
 export class Shortener {
-    private ACCEPTABLE_CHARS = 'abcdefghjkmnpqrstuvwxyz23456789';
-    private HASH_LEN = 7;
+    public static ACCEPTABLE_CHARS = 'abcdefghjkmnpqrstuvwxyz23456789';
+    public static HASH_LEN = 7;
 
-    private genHash(length: number, acceptableCharacters: string) {
+    public genHash(length: number, acceptableCharacters: string): string {
         // Build an array of random characters
         const randomChars = [];
         for (let i = 0; i < length; i++) {
@@ -16,7 +16,7 @@ export class Shortener {
         return randomChars.join('');
     }
 
-    private randNum(min: number, max: number) {
+    public randNum(min: number, max: number): number {
         const dif = max - min;
         return Math.round(Math.random() * dif) + min;
     }
