@@ -6,8 +6,29 @@ describe('Shortener', () => {
         shortener = new Shortener();
     });
 
+    describe('constructor', () => {
+        it('should use default values if no parameters are defined', () => {
+            const hashChars = 'abcdefg1234';
+            const hashLen = 16;
+
+            const instance1 = new Shortener();
+            expect(instance1.hashChars).toEqual(
+                Shortener.DEFAULT_ACCEPTABLE_CHARS
+            );
+            expect(instance1.hashLen).toEqual(Shortener.DEFAULT_HASH_LEN);
+
+            const instance2 = new Shortener(hashChars);
+            expect(instance2.hashChars).toEqual(hashChars);
+            expect(instance2.hashLen).toEqual(Shortener.DEFAULT_HASH_LEN);
+
+            const instance3 = new Shortener(hashChars, hashLen);
+            expect(instance3.hashChars).toEqual(hashChars);
+            expect(instance3.hashLen).toEqual(hashLen);
+        });
+    });
+
     describe('genHash', () => {
-        const hashChars = Shortener.ACCEPTABLE_CHARS;
+        const hashChars = Shortener.DEFAULT_ACCEPTABLE_CHARS;
 
         it('should generate hash of specified length', () => {
             let hashLen = 4;
