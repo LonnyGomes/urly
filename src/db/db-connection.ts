@@ -8,21 +8,19 @@ export class UrlyDatabaseConnection {
         this._dbPath = dbPath;
     }
 
-    init() {
+    init(): Promise<Database> {
         return new Promise((resolve, reject) => {
             let db = new Database(
                 this._dbPath,
                 sqlite3.OPEN_READWRITE,
                 (err) => {
                     if (err) {
-                        reject(err.message);
+                        reject(err);
                     } else {
                         console.log('connected to sqlite db');
+                        this._db = db;
+                        resolve(db);
                     }
-
-                    this._db = db;
-
-                    resolve(db);
                 }
             );
         });
