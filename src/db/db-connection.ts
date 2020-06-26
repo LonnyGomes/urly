@@ -2,23 +2,34 @@ import { default as sqlite3, Database } from 'sqlite3';
 
 export class UrlyDatabaseConnection {
     private _db: Database | undefined;
+    private _dbPath: string;
 
-    constructor() {}
+    constructor(dbPath: string) {
+        this._dbPath = dbPath;
+    }
 
-    init(dbPath: string) {
+    init() {
         return new Promise((resolve, reject) => {
-            let db = new Database(dbPath, sqlite3.OPEN_READWRITE, (err) => {
-                if (err) {
-                    reject(err.message);
-                } else {
-                    console.log('connected to sqlite db');
+            let db = new Database(
+                this._dbPath,
+                sqlite3.OPEN_READWRITE,
+                (err) => {
+                    if (err) {
+                        reject(err.message);
+                    } else {
+                        console.log('connected to sqlite db');
+                    }
+
+                    this._db = db;
+
+                    resolve(db);
                 }
-
-                this._db = db;
-
-                resolve(db);
-            });
+            );
         });
+    }
+
+    get dbPath(): string {
+        return this._dbPath;
     }
 
     dbAll(query: string) {
