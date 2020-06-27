@@ -54,14 +54,19 @@ export class UrlyDatabaseConnection {
                 return;
             }
 
-            const stmt = this._db.prepare(query);
-            stmt.run(values, (err) => {
-                if (err) {
-                    console.log('error', err);
-                    reject(err);
-                } else {
-                    resolve('success');
+            const stmt = this._db.prepare(query, (prepareErr) => {
+                if (prepareErr) {
+                    reject(prepareErr);
+                    return;
                 }
+
+                stmt.run(values, (err) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve('success');
+                    }
+                });
             });
         });
     }

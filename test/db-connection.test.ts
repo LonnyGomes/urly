@@ -117,6 +117,7 @@ describe('UrlyDatabaseConnection', () => {
                 expect(error.message).toMatch(/^Database was not initialize/);
             }
         });
+
         it('should throw error if prepared query is invalid', async () => {
             const conn = new UrlyDatabaseConnection(TMP_DB_PATH);
 
