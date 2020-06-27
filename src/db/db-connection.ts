@@ -1,5 +1,5 @@
 import { default as sqlite3, Database } from 'sqlite3';
-
+import { URLResultModel } from './models';
 export class UrlyDatabaseConnection {
     private _db: Database | undefined;
     private _dbPath: string;
@@ -10,6 +10,7 @@ export class UrlyDatabaseConnection {
 
     init(): Promise<Database> {
         return new Promise((resolve, reject) => {
+            sqlite3.verbose(); // enable verbose debugging
             let db = new Database(
                 this._dbPath,
                 sqlite3.OPEN_READWRITE,
@@ -17,7 +18,7 @@ export class UrlyDatabaseConnection {
                     if (err) {
                         reject(err);
                     } else {
-                        console.log('connected to sqlite db');
+                        // console.log('connected to sqlite db');
                         this._db = db;
                         resolve(db);
                     }
@@ -30,10 +31,10 @@ export class UrlyDatabaseConnection {
         return this._dbPath;
     }
 
-    dbAll(query: string) {
+    dbAll(query: string): Promise<URLResultModel[]> {
         return new Promise((resolve, reject) => {
             if (!this._db) {
-                reject('Database was not initialize');
+                reject(new Error('Database was not initialize'));
                 return;
             }
 
@@ -49,7 +50,7 @@ export class UrlyDatabaseConnection {
     dbRunPrepared(query: string, values: Array<any>) {
         return new Promise((resolve, reject) => {
             if (!this._db) {
-                reject('Database was not initialize');
+                reject(new Error('Database was not initialize'));
                 return;
             }
 

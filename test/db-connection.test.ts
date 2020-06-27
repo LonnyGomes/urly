@@ -9,6 +9,9 @@ const DB_PATH = path.resolve(FIXTURE_PATH, 'db', 'urly.db');
 const TMP_PATH = path.resolve(FIXTURE_PATH, 'tmp');
 const TMP_DB_PATH = path.resolve(TMP_PATH, 'urly.db');
 
+const SQL_SELECT_ALL_URL = 'SELECT * from url';
+const SQL_INSERT_URL = `INSERT INTO url ('hash', 'url') VALUES (?,?)`;
+
 describe('UrlyDatabaseConnection', () => {
     beforeEach(() => {
         fs.ensureDirSync(TMP_PATH);
@@ -47,6 +50,86 @@ describe('UrlyDatabaseConnection', () => {
 
             const db: Database = await conn.init();
             expect(db.run).toBeDefined();
+        });
+    });
+
+    describe('dbAll', () => {
+        it('should return results for a query', async () => {
+            const conn = new UrlyDatabaseConnection(TMP_DB_PATH);
+
+            await conn.init();
+            const results = await conn.dbAll(SQL_SELECT_ALL_URL);
+
+            expect(Array.isArray(results)).toBeTruthy();
+            const [item] = results;
+
+            expect(item.hash).toBeDefined();
+            expect(item.url).toBeDefined();
+        });
+
+        it('should throw error if db was not initialized before call', async () => {
+            const conn = new UrlyDatabaseConnection(TMP_DB_PATH);
+
+            expect.assertions(1);
+            try {
+                const results = await conn.dbAll(SQL_SELECT_ALL_URL);
+            } catch (error) {
+                expect(error.message).toMatch(/^Database was not initialize$/);
+            }
+        });
+
+        it('should throw error if query is invalid', async () => {
+            const conn = new UrlyDatabaseConnection(TMP_DB_PATH);
+
+            expect.assertions(1);
+            try {
+                await conn.init();
+                const results = await conn.dbAll('SELECT * FROM ...');
+            } catch (error) {
+                expect(error.message).toMatch(/syntax error/);
+            }
+        });
+    });
+
+    describe('dbRunPrepared', () => {
+        it('should return results for a prepared query', async () => {
+            const query = SQL_INSERT_URL;
+            const hash = 'cafeb4b';
+            const url = 'https://amazon.com';
+            const conn = new UrlyDatabaseConnection(TMP_DB_PATH);
+
+            await conn.init();
+            const results = await conn.dbRunPrepared(query, [hash, url]);
+
+            expect(results).toEqual('success');
+        });
+
+        it('should throw error if db was not initialized before call', async () => {
+            const conn = new UrlyDatabaseConnection(TMP_DB_PATH);
+
+            expect.assertions(1);
+            try {
+                const results = await conn.dbRunPrepared(SQL_INSERT_URL, [
+                    'hash',
+                    'url',
+                ]);
+            } catch (error) {
+                expect(error.message).toMatch(/^Database was not initialize/);
+            }
+        });
+        it('should throw error if prepared query is invalid', async () => {
+            const conn = new UrlyDatabaseConnection(TMP_DB_PATH);
+
+            expect.assertions(1);
+            try {
+                await conn.init();
+                const results = await conn.dbRunPrepared('INSERT URL (?, ?)', [
+                    'hash',
+                    'url',
+                ]);
+            } catch (error) {
+                expect(error.message).toMatch(/syntax error/);
+            }
         });
     });
 });
