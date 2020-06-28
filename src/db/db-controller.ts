@@ -20,8 +20,8 @@ export class UrlyDatabaseController {
      */
     async getByHash(hash: string): Promise<URLResultModel> {
         const query = `SELECT * FROM url WHERE hash = '${hash}'`;
-        const rows = await this._db.dbAll(query);
+        const [result] = await this._db.dbAll(query);
 
-        return rows[0];
+        return result || { hash: '', url: '' };
     }
 }
