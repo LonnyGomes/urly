@@ -56,4 +56,16 @@ describe('UrlyDatabaseController', () => {
             expect(url).toEqual(dbAllResult.url);
         });
     });
+
+    describe('getByURL', () => {
+        it('should be implemented', async () => {
+            expect(true).toBeTruthy();
+        });
+    });
+
+    describe('insertURL', () => {
+        it('should be implemented', async () => {
+            expect(true).toBeTruthy();
+        });
+    });
 });
