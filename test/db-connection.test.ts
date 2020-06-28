@@ -78,7 +78,19 @@ describe('UrlyDatabaseConnection', () => {
             }
         });
 
-        it('should throw error if query is invalid', async () => {
+        it('should return an empty array if query contains no results', async () => {
+            const conn = new UrlyDatabaseConnection(TMP_DB_PATH);
+
+            await conn.init();
+            const results = await conn.dbAll(
+                'SELECT * from url WHERE url="non existent"'
+            );
+
+            expect(results).toBeDefined();
+            expect(results.length).toEqual(0);
+        });
+
+        it('should throw error if query return zero results', async () => {
             const conn = new UrlyDatabaseConnection(TMP_DB_PATH);
 
             expect.assertions(1);
