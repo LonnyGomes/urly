@@ -64,8 +64,48 @@ describe('UrlyDatabaseController', () => {
     });
 
     describe('insertURL', () => {
-        it('should be implemented', async () => {
-            expect(true).toBeTruthy();
+        it('should return existing hash if url is already defined', async () => {
+            const expectedHash = 'r7r2u6m';
+            const expectedUrl = 'http://google.com';
+            const dbAllResult = { hash: expectedHash, url: expectedUrl };
+
+            // override the dbAll implementation
+            const dbAllMock = jest.fn().mockImplementation(() => {
+                return Promise.resolve([dbAllResult]);
+            });
+            db.dbAll = dbAllMock;
+
+            const controller = new UrlyDatabaseController(db);
+            const { hash, url } = await controller.insertURL(expectedUrl);
+
+            expect(dbAllMock.mock.calls.length).toEqual(1);
+            expect(hash).toEqual(dbAllResult.hash);
+            expect(url).toEqual(dbAllResult.url);
+        });
+
+        it('should return new hash if url is not already defined', async () => {
+            const expectedUrl = 'http://google.com';
+
+            // override the dbAll implementation
+            const dbAllMock = jest.fn().mockImplementation(() => {
+                return Promise.resolve([]);
+            });
+            db.dbAll = dbAllMock;
+
+            // override the dbRunPrepared implementation
+            const dbRunPreparedMock = jest.fn().mockImplementation(() => {
+                return Promise.resolve();
+            });
+            db.dbRunPrepared = dbRunPreparedMock;
+
+            const controller = new UrlyDatabaseController(db);
+            const { hash, url } = await controller.insertURL(expectedUrl);
+
+            expect(dbAllMock.mock.calls.length).toEqual(1);
+            expect(dbRunPreparedMock.mock.calls.length).toEqual(1);
+
+            expect(typeof hash).toEqual('string');
+            expect(url).toEqual(expectedUrl);
         });
     });
 });
