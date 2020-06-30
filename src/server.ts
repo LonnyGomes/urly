@@ -4,11 +4,12 @@ import serve from 'koa-static';
 import mount from 'koa-mount';
 import helmet from 'koa-helmet';
 import Router from '@koa/router';
-import { apiRouter } from './controllers/api.controller';
+import { ApiController } from './controllers/api.controller';
 import { rootRouter } from './controllers/root.controller';
+import { UrlyDatabaseConnection } from './db/db-connection';
 
 const Koa = require('koa');
-export const app = new Koa();
+const app = new Koa();
 
 // Add body parser to handle POST request data
 app.use(bodyParser());
@@ -56,14 +57,19 @@ app.use(async (ctx: Context, next: Next) => {
 // map base URL to html content
 app.use(mount('/', serve('./app/')));
 
-// create koa router
-const router = new Router();
+export function initServer(db: UrlyDatabaseConnection) {
+    // create koa router
+    const router = new Router();
 
-// add api controller endpoints
-router.use('/api', apiRouter.routes(), apiRouter.allowedMethods());
+    const apiRouter = new ApiController(db).router;
+    // add api controller endpoints
+    router.use('/api', apiRouter.routes(), apiRouter.allowedMethods());
 
-// add root controller middleware
-router.use(rootRouter.routes(), rootRouter.allowedMethods());
+    // add root controller middleware
+    router.use(rootRouter.routes(), rootRouter.allowedMethods());
 
-// add router middleware to app
-app.use(router.routes()).use(router.allowedMethods());
+    // add router middleware to app
+    app.use(router.routes()).use(router.allowedMethods());
+
+    return app;
+}

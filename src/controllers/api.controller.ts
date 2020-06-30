@@ -1,8 +1,33 @@
 import { Context, Next } from 'koa';
-
 import Router from '@koa/router';
+import { UrlyDatabaseController } from '../db/db-controller';
+import { UrlyDatabaseConnection } from '../db/db-connection';
 
 export class ApiController {
+    private _dbController: UrlyDatabaseController;
+    private _router: Router;
+
+    constructor(db: UrlyDatabaseConnection) {
+        this._dbController = new UrlyDatabaseController(db);
+        this._router = this.initRouter();
+    }
+
+    private initRouter(): Router {
+        // Define API routes
+        const router = new Router();
+
+        router.get('/url/:hashKey', ApiController.getUrl);
+        router.post('/url/', ApiController.postUrl);
+        router.all('/(.*)', ApiController.invalidMessage);
+        router.all('/(.*)/(.*)', ApiController.invalidMessage);
+
+        return router;
+    }
+
+    public get router(): Router {
+        return this._router;
+    }
+
     public static async getUrl(ctx: Context): Promise<void> {
         const fullUrl = 'https://www.google.com'; // TEMP implementation
         ctx.status = 200;
@@ -41,11 +66,3 @@ export class ApiController {
         }
     }
 }
-
-// Define API routes
-export const apiRouter = new Router();
-
-apiRouter.get('/url/:fullUrl', ApiController.getUrl);
-apiRouter.post('/url/', ApiController.postUrl);
-apiRouter.all('/(.*)', ApiController.invalidMessage);
-apiRouter.all('/(.*)/(.*)', ApiController.invalidMessage);

@@ -1,10 +1,18 @@
 import * as dotenv from 'dotenv';
-import { app } from './server';
+import { initServer } from './server';
+import { UrlyDatabaseConnection } from './db/db-connection';
 
 dotenv.config();
 
-const PORT = process.env.PORT || 3000;
+try {
+    const db = new UrlyDatabaseConnection('src/db/urly.db');
+    const app = initServer(db);
 
-console.log(`Server started on on port ${PORT}`);
+    const PORT = process.env.PORT || 3000;
 
-app.listen(PORT);
+    console.log(`Server started on on port ${PORT}`);
+
+    app.listen(PORT);
+} catch (error) {
+    console.error(`Encountered error in server: ${error.message}`);
+}
