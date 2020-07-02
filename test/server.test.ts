@@ -17,6 +17,8 @@ describe('koa server', () => {
         fs.copyFileSync(DB_PATH, TMP_DB_PATH);
 
         const db = new UrlyDatabaseConnection(TMP_DB_PATH);
+        db.init();
+
         const app = initServer(db);
         server = app.callback();
     });
@@ -37,8 +39,6 @@ describe('koa server', () => {
         it('should redirect to 404 url if page not found', async () => {
             const response: any = await request(server).get('/bogus-file.html');
 
-            // console.log('keys', Object.keys(response));
-
             expect(response.header.location).toMatch(/404.html$/);
             expect(response.type).toEqual('text/html');
             expect(response.text).toMatch(/^Redirecting to/);
@@ -47,8 +47,22 @@ describe('koa server', () => {
 
     describe('/api', () => {
         describe('GET /url:fullUrl', () => {
+            it('should return a 400 error when an  invalid hash is supplied', async () => {
+                const expectedHashKey = 'aaaaaaa';
+                const expectedResponse = {
+                    status: false,
+                    message: `URL not found for ${expectedHashKey}`,
+                };
+                const response: any = await request(server).get(
+                    `/api/url/${expectedHashKey}`
+                );
+
+                expect(response.status).toEqual(400);
+                expect(response.body).toEqual(expectedResponse);
+            });
+
             it('should return a URL when a valid hash is supplied', async () => {
-                const expectedHashKey = 'abcd123';
+                const expectedHashKey = 'r7r2u6m';
                 const expectedResponse = {
                     status: true,
                     fullUrl: 'https://www.google.com',

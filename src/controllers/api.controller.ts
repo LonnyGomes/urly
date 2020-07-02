@@ -30,8 +30,26 @@ export class ApiController {
 
     public async getUrl(ctx: Context): Promise<void> {
         const fullUrl = 'https://www.google.com'; // TEMP implementation
-        ctx.status = 200;
-        ctx.body = { status: true, fullUrl };
+
+        const { shortId } = ctx.params;
+
+        if (!shortId) {
+            throw new Error('shortId not supplied');
+        }
+
+        // TODO: sanitize shortId
+        const result = await this._dbController.getByHash(shortId);
+
+        if (result && result.url) {
+            ctx.status = 200;
+            ctx.body = { status: true, fullUrl };
+        } else {
+            ctx.status = 400;
+            ctx.body = {
+                status: false,
+                message: `URL not found for ${shortId}`,
+            };
+        }
     }
 
     public async postUrl(ctx: Context): Promise<void> {
