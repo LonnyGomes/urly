@@ -4,15 +4,21 @@ import { UrlyDatabaseConnection } from './db/db-connection';
 
 dotenv.config();
 
-try {
-    const db = new UrlyDatabaseConnection('src/db/urly.db');
-    const app = initServer(db);
+const start = async () => {
+    try {
+        const db = new UrlyDatabaseConnection('src/db/urly.db');
 
-    const PORT = process.env.PORT || 3000;
+        await db.init();
+        const app = initServer(db);
 
-    console.log(`Server started on on port ${PORT}`);
+        const PORT = process.env.PORT || 3000;
 
-    app.listen(PORT);
-} catch (error) {
-    console.error(`Encountered error in server: ${error.message}`);
-}
+        console.log(`Server started on on port ${PORT}`);
+
+        app.listen(PORT);
+    } catch (error) {
+        console.error(`Encountered error in server: ${error.message}`);
+    }
+};
+
+start();
