@@ -16,10 +16,10 @@ export class ApiController {
         // Define API routes
         const router = new Router();
 
-        router.get('/url/:hashKey', ApiController.getUrl);
-        router.post('/url/', ApiController.postUrl);
-        router.all('/(.*)', ApiController.invalidMessage);
-        router.all('/(.*)/(.*)', ApiController.invalidMessage);
+        router.get('/url/:shortId', this.getUrl.bind(this));
+        router.post('/url/', this.postUrl.bind(this));
+        router.all('/(.*)', this.invalidMessage.bind(this));
+        router.all('/(.*)/(.*)', this.invalidMessage.bind(this));
 
         return router;
     }
@@ -28,13 +28,13 @@ export class ApiController {
         return this._router;
     }
 
-    public static async getUrl(ctx: Context): Promise<void> {
+    public async getUrl(ctx: Context): Promise<void> {
         const fullUrl = 'https://www.google.com'; // TEMP implementation
         ctx.status = 200;
         ctx.body = { status: true, fullUrl };
     }
 
-    public static async postUrl(ctx: Context): Promise<void> {
+    public async postUrl(ctx: Context): Promise<void> {
         const shortId = '78fd82'; // TEMP implementation
         const { fullUrl } = ctx.request.body;
 
@@ -54,10 +54,7 @@ export class ApiController {
         };
     }
 
-    public static async invalidMessage(
-        ctx: Context,
-        next: Next
-    ): Promise<void> {
+    public async invalidMessage(ctx: Context, next: Next): Promise<void> {
         if (ctx.status === 404) {
             ctx.status = 200;
             ctx.body = { status: false, message: 'Invalid endpoint' };
