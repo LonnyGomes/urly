@@ -4,12 +4,15 @@ import serve from 'koa-static';
 import mount from 'koa-mount';
 import helmet from 'koa-helmet';
 import Router from '@koa/router';
+import Debug from 'debug';
 import { ApiController } from './controllers/api.controller';
 import { rootRouter } from './controllers/root.controller';
 import { UrlyDatabaseConnection } from './db/db-connection';
 
 const Koa = require('koa');
 const app = new Koa();
+
+const debug = Debug('koa:app');
 
 // Add body parser to handle POST request data
 app.use(bodyParser());
@@ -42,7 +45,7 @@ app.use(async (ctx: Context, next: Next) => {
 app.use(async (ctx: Context, next: Next) => {
     await next();
     const rt = ctx.response.get('X-Response-Time');
-    console.log(`${ctx.method} ${ctx.url} - ${rt}`);
+    debug(`${ctx.method} ${ctx.url} - ${rt}`);
 });
 
 // x-response-time

@@ -1,5 +1,9 @@
 import { default as sqlite3, Database } from 'sqlite3';
 import { URLResultModel } from './models';
+import Debug from 'debug';
+
+const debug = Debug('db:connection');
+
 export class UrlyDatabaseConnection {
     private _db: Database | undefined;
     private _dbPath: string;
@@ -18,7 +22,7 @@ export class UrlyDatabaseConnection {
                     if (err) {
                         reject(err);
                     } else {
-                        // console.log('connected to sqlite db');
+                        debug('connected to sqlite db');
                         this._db = db;
                         resolve(db);
                     }
