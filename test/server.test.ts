@@ -75,5 +75,39 @@ describe('koa server', () => {
                 expect(response.body).toEqual(expectedResponse);
             });
         });
+
+        describe('POST /url', () => {
+            it('should return a 400 error if fullUrl param is not supplied', async () => {
+                const response: any = await request(server)
+                    .post('/api/url/')
+                    .set('Accept', 'application/json');
+
+                expect(response.status).toEqual(400);
+                expect(response.body.message).toMatch(
+                    /Missing fullUrl parameter/
+                );
+            });
+
+            it('should generate and save a shorten URL when a valid URL is supplied', async () => {
+                const inputUrl = 'https://www.apple.com';
+                const response: any = await request(server)
+                    .post('/api/url/')
+                    .send({ fullUrl: inputUrl })
+                    .set('Accept', 'application/json');
+
+                const { fullUrl, shortUrl } = response.body;
+
+                expect(response.status).toEqual(200);
+
+                // verify full url result param
+                expect(fullUrl).toBeDefined();
+                expect(fullUrl).toEqual(inputUrl);
+
+                // verify short url result param
+                expect(shortUrl).toBeDefined();
+                // TOOD: enhance this unit test once the config is implemented
+                expect(shortUrl).toMatch(/https:\/\/baseurl.me\/.*/);
+            });
+        });
     });
 });

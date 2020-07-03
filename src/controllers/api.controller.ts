@@ -56,20 +56,18 @@ export class ApiController {
         const shortId = '78fd82'; // TEMP implementation
         const { fullUrl } = ctx.request.body;
 
-        if (!fullUrl) {
-            ctx.status = 403;
-            return Promise.reject({
-                status: false,
+        if (fullUrl) {
+            ctx.status = 200;
+            ctx.body = {
+                fullUrl,
+                shortUrl: `https://baseurl.me/${shortId}`, // TEMP implementation
+            };
+        } else {
+            ctx.status = 400;
+            ctx.body = {
                 message: 'Missing fullUrl parameter',
-            });
+            };
         }
-
-        ctx.status = 200;
-        ctx.body = {
-            status: true,
-            fullUrl,
-            shortUrl: `https://baseurl.me/${shortId}`, // TEMP implementation
-        };
     }
 
     public async invalidMessage(ctx: Context, next: Next): Promise<void> {
