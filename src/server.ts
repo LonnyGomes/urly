@@ -6,7 +6,7 @@ import helmet from 'koa-helmet';
 import Router from '@koa/router';
 import Debug from 'debug';
 import { ApiController } from './controllers/api.controller';
-import { rootRouter } from './controllers/root.controller';
+import { RootController } from './controllers/root.controller';
 import { UrlyDatabaseConnection } from './db/db-connection';
 
 const Koa = require('koa');
@@ -68,7 +68,8 @@ export function initServer(db: UrlyDatabaseConnection) {
     // add api controller endpoints
     router.use('/api', apiRouter.routes(), apiRouter.allowedMethods());
 
-    // add root controller middleware
+    const rootRouter = new RootController(db).router;
+    // add root controller endpoints
     router.use(rootRouter.routes(), rootRouter.allowedMethods());
 
     // add router middleware to app
