@@ -12,12 +12,12 @@ const TMP_DB_PATH = path.resolve(TMP_PATH, 'urly.db');
 describe('koa server', () => {
     let server: any;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         fs.ensureDirSync(TMP_PATH);
         fs.copyFileSync(DB_PATH, TMP_DB_PATH);
 
         const db = new UrlyDatabaseConnection(TMP_DB_PATH);
-        db.init();
+        await db.init();
 
         const app = initServer(db);
         server = app.callback();
@@ -39,9 +39,35 @@ describe('koa server', () => {
         it('should redirect to 404 url if page not found', async () => {
             const response: any = await request(server).get('/bogus-file.html');
 
+            expect(response.status).toEqual(404);
             expect(response.header.location).toMatch(/404.html$/);
             expect(response.type).toEqual('text/html');
             expect(response.text).toMatch(/^Redirecting to/);
+        });
+    });
+
+    describe('/', () => {
+        describe('GET /:shortId', () => {
+            it('should redirect to 404 url if hash is invalid', async () => {
+                const inputShortId = 'abcd123';
+                const response: any = await request(server).get(
+                    `/${inputShortId}`
+                );
+
+                expect(response.status).toEqual(404);
+                expect(response.header.location).toEqual('/404.html');
+            });
+
+            it('should redirect to URL given proper hash', async () => {
+                const inputShortId = 'r7r2u6m';
+                const expectedUrl = 'http://google.com';
+                const response: any = await request(server).get(
+                    `/${inputShortId}`
+                );
+
+                expect(response.status).toEqual(302);
+                expect(response.header.location).toEqual(expectedUrl);
+            });
         });
     });
 

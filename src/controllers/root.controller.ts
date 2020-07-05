@@ -29,15 +29,19 @@ export class RootController {
     public async expandUrl(ctx: Context, next: Next): Promise<void> {
         const { shortId } = ctx.params;
 
-        // TODO: check for shortId mapping
-        const fullUrl = 'http://www.google.com'; // TEMP implementation
-        // console.log(`shortId param: ${shortId}`);
+        // TODO: check for shortId syntax
+        if (!shortId) {
+            ctx.status = 404;
+            next();
+            return;
+        }
 
-        //TODO: if not found, redirect to a 404 page
-        //      for now, just run a regEx
-        if (shortId && shortId.match(/^[a-f0-9]{6}$/i)) {
-            ctx.redirect(fullUrl);
+        const { url } = await this._dbController.getByHash(shortId);
+
+        if (url) {
+            ctx.redirect(url);
         } else {
+            // if not found, redirect to a 404 page
             ctx.status = 404;
             next();
         }
