@@ -3,8 +3,9 @@ import { Context, Next } from 'koa';
 import Router from '@koa/router';
 import { UrlyDatabaseController } from '../db/db-controller';
 import { UrlyDatabaseConnection } from '../db/db-connection';
+import { IRouteController } from './route-controller.model';
 
-export class RootController {
+export class RootController implements IRouteController {
     private _dbController: UrlyDatabaseController;
     private _router: Router;
 
@@ -17,7 +18,11 @@ export class RootController {
         return this._router;
     }
 
-    private initRouter(): Router {
+    public get controller(): UrlyDatabaseController {
+        return this._dbController;
+    }
+
+    initRouter(): Router {
         // Define API routes
         const router = new Router();
 

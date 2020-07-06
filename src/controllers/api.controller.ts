@@ -2,8 +2,9 @@ import { Context, Next } from 'koa';
 import Router from '@koa/router';
 import { UrlyDatabaseController } from '../db/db-controller';
 import { UrlyDatabaseConnection } from '../db/db-connection';
+import { IRouteController } from './route-controller.model';
 
-export class ApiController {
+export class ApiController implements IRouteController {
     private _dbController: UrlyDatabaseController;
     private _router: Router;
 
@@ -12,7 +13,7 @@ export class ApiController {
         this._router = this.initRouter();
     }
 
-    private initRouter(): Router {
+    initRouter(): Router {
         // Define API routes
         const router = new Router();
 
@@ -26,6 +27,10 @@ export class ApiController {
 
     public get router(): Router {
         return this._router;
+    }
+
+    public get controller(): UrlyDatabaseController {
+        return this._dbController;
     }
 
     public async getUrl(ctx: Context): Promise<void> {
