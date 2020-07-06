@@ -11,12 +11,16 @@ const TMP_DB_PATH = path.resolve(TMP_PATH, 'urly.db');
 
 describe('koa server', () => {
     let server: any;
+    let db: UrlyDatabaseConnection;
 
     beforeEach(async () => {
+        if (db) {
+            await db.close();
+        }
         fs.ensureDirSync(TMP_PATH);
         fs.copyFileSync(DB_PATH, TMP_DB_PATH);
 
-        const db = new UrlyDatabaseConnection(TMP_DB_PATH);
+        db = new UrlyDatabaseConnection(TMP_DB_PATH);
         await db.init();
 
         const app = initServer(db);

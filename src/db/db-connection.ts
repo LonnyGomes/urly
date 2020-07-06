@@ -31,6 +31,25 @@ export class UrlyDatabaseConnection {
         });
     }
 
+    close(): Promise<{ message: string }> {
+        return new Promise((resolve, reject) => {
+            if (!this._db) {
+                reject(new Error('Database was not initialize'));
+                return;
+            }
+
+            this._db.close((err) => {
+                if (err) {
+                    reject(err.message);
+                } else {
+                    const message = 'Closed database';
+                    debug(message);
+                    resolve({ message });
+                }
+            });
+        });
+    }
+
     get dbPath(): string {
         return this._dbPath;
     }

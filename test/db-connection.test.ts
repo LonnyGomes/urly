@@ -145,4 +145,26 @@ describe('UrlyDatabaseConnection', () => {
             }
         });
     });
+
+    describe('close', () => {
+        it('should throw error if db was not initialized before call', async () => {
+            const conn = new UrlyDatabaseConnection(TMP_DB_PATH);
+
+            expect.assertions(1);
+            try {
+                await conn.close();
+            } catch (error) {
+                expect(error.message).toMatch(/^Database was not initialize$/);
+            }
+        });
+    });
+
+    it('should close a previously initialized database', async () => {
+        const conn = new UrlyDatabaseConnection(TMP_DB_PATH);
+
+        await conn.init();
+        const { message } = await conn.close();
+
+        expect(message).toEqual('Closed database');
+    });
 });
