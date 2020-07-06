@@ -37,12 +37,12 @@ describe('koa server', () => {
         });
 
         it('should redirect to 404 url if page not found', async () => {
+            const titleRegex = /<title>.*404.*<\/title>/;
             const response: any = await request(server).get('/bogus-file.html');
 
             expect(response.status).toEqual(404);
-            expect(response.header.location).toMatch(/404.html$/);
             expect(response.type).toEqual('text/html');
-            expect(response.text).toMatch(/^Redirecting to/);
+            expect(response.text).toMatch(titleRegex);
         });
     });
 
@@ -50,12 +50,14 @@ describe('koa server', () => {
         describe('GET /:shortId', () => {
             it('should redirect to 404 url if hash is invalid', async () => {
                 const inputShortId = 'abcd123';
+                const titleRegex = /<title>.*404.*<\/title>/;
                 const response: any = await request(server).get(
                     `/${inputShortId}`
                 );
 
                 expect(response.status).toEqual(404);
-                expect(response.header.location).toEqual('/404.html');
+                expect(response.type).toEqual('text/html');
+                expect(response.text).toMatch(titleRegex);
             });
 
             it('should redirect to URL given proper hash', async () => {

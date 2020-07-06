@@ -5,6 +5,7 @@ import mount from 'koa-mount';
 import helmet from 'koa-helmet';
 import Router from '@koa/router';
 import Debug from 'debug';
+import { readFile } from 'fs-extra';
 import { ApiController } from './controllers/api.controller';
 import { RootController } from './controllers/root.controller';
 import { UrlyDatabaseConnection } from './db/db-connection';
@@ -13,6 +14,26 @@ const Koa = require('koa');
 const app = new Koa();
 
 const debug = Debug('koa:app');
+
+const PATHS = {
+    NOT_FOUND: 'app/404.html',
+    ERROR: 'app/error.html',
+};
+
+const readFileContents = async (filePath: string) => {
+    const backupContents = `<html><head><title>Error</title>
+                            <body><h1>Encountered an unspecified error</h1></body></html>`;
+
+    let contents = null;
+    try {
+        contents = await readFile(filePath);
+    } catch (error) {
+        debug(`Failed to load file: ${filePath}`);
+        contents = backupContents;
+    }
+
+    return contents;
+};
 
 // Add body parser to handle POST request data
 app.use(bodyParser());
@@ -33,11 +54,12 @@ app.use(async (ctx: Context, next: Next) => {
     } catch (err) {
         ctx.status = err.status || 500;
         if (ctx.status === 404) {
-            await ctx.redirect('/404.html');
-            ctx.status = 404;
+            ctx.type = 'text/html';
+            ctx.body = await readFileContents(PATHS.NOT_FOUND);
         } else {
             console.error('Encounters internal error', err);
-            await ctx.redirect('/error.html');
+            ctx.type = 'text/html';
+            ctx.body = await readFileContents(PATHS.ERROR);
         }
     }
 });
