@@ -121,16 +121,19 @@ describe('koa server', () => {
             });
 
             it('should generate and save a shorten URL when a valid URL is supplied', async () => {
-                const inputUrl = 'http://google.com';
-                const expectedShortUrl = 'https://baseurl.me/r7r2u6m';
+                const inputUrl = 'http://my.google.com';
+                const expectedShortUrl = /^http:\/\/localhost:3000\//;
                 const response: any = await request(server)
                     .post('/api/url/')
                     .send({ fullUrl: inputUrl })
                     .set('Accept', 'application/json');
 
-                const { fullUrl, shortUrl } = response.body;
+                const { hash, fullUrl, shortUrl } = response.body;
 
                 expect(response.status).toEqual(200);
+
+                // verify hash result param
+                expect(hash).toBeDefined();
 
                 // verify full url result param
                 expect(fullUrl).toBeDefined();
@@ -139,7 +142,7 @@ describe('koa server', () => {
                 // verify short url result param
                 expect(shortUrl).toBeDefined();
                 // TOOD: enhance this unit test once the config is implemented
-                expect(shortUrl).toEqual(expectedShortUrl);
+                expect(shortUrl).toMatch(expectedShortUrl);
             });
         });
     });

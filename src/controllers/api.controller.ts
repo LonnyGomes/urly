@@ -60,14 +60,23 @@ export class ApiController implements IRouteController {
     public async postUrl(ctx: Context): Promise<void> {
         const { fullUrl } = ctx.request.body;
 
+        if (!fullUrl) {
+            ctx.status = 400;
+            ctx.body = {
+                message: 'Missing fullUrl parameter',
+            };
+            return;
+        }
+
         // TODO: sanitize input URL
-        const { hash } = await this._dbController.getByURL(fullUrl);
+        const { hash } = await this._dbController.insertURL(fullUrl);
 
         if (hash) {
             ctx.status = 200;
             ctx.body = {
+                hash,
                 fullUrl,
-                shortUrl: `https://baseurl.me/${hash}`, // TEMP implementation
+                shortUrl: `http://localhost:3000/${hash}`, // TEMP implementation
             };
         } else {
             ctx.status = 400;
