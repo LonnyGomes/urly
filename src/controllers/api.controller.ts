@@ -58,14 +58,16 @@ export class ApiController implements IRouteController {
     }
 
     public async postUrl(ctx: Context): Promise<void> {
-        const shortId = '78fd82'; // TEMP implementation
         const { fullUrl } = ctx.request.body;
 
-        if (fullUrl) {
+        // TODO: sanitize input URL
+        const { hash } = await this._dbController.getByURL(fullUrl);
+
+        if (hash) {
             ctx.status = 200;
             ctx.body = {
                 fullUrl,
-                shortUrl: `https://baseurl.me/${shortId}`, // TEMP implementation
+                shortUrl: `https://baseurl.me/${hash}`, // TEMP implementation
             };
         } else {
             ctx.status = 400;
