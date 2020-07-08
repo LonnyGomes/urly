@@ -68,20 +68,27 @@ export class ApiController implements IRouteController {
             return;
         }
 
-        // TODO: sanitize input URL
-        const { hash } = await this._dbController.insertURL(fullUrl);
+        try {
+            // TODO: sanitize input URL
+            const { hash } = await this._dbController.insertURL(fullUrl);
 
-        if (hash) {
-            ctx.status = 200;
+            if (hash) {
+                ctx.status = 200;
+                ctx.body = {
+                    hash,
+                    fullUrl,
+                    shortUrl: `http://localhost:3000/${hash}`, // TEMP implementation
+                };
+            } else {
+                ctx.status = 400;
+                ctx.body = {
+                    message: 'Failed to generate hash',
+                };
+            }
+        } catch (error) {
+            ctx.status = 500;
             ctx.body = {
-                hash,
-                fullUrl,
-                shortUrl: `http://localhost:3000/${hash}`, // TEMP implementation
-            };
-        } else {
-            ctx.status = 400;
-            ctx.body = {
-                message: 'Missing fullUrl parameter',
+                message: error.message,
             };
         }
     }
