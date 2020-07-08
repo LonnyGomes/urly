@@ -8,20 +8,33 @@ const FIXTURE_PATH = path.resolve(__dirname, 'fixtures');
 const DB_PATH = path.resolve(FIXTURE_PATH, 'db', 'urly.db');
 const TMP_PATH = path.resolve(FIXTURE_PATH, 'tmp');
 const TMP_DB_PATH = path.resolve(TMP_PATH, 'urly.db');
+const DB_MEMORY_PATH = ':memory:'; // use_in memory db
+
+const seedDb = async (db: UrlyDatabaseConnection) => {
+    // create schema
+    await db.dbAll(
+        'CREATE TABLE IF NOT EXISTS url(hash VARCHAR(40) PRIMARY KEY, url VARCHAR(200))'
+    );
+
+    // insert test data
+    await db.dbRunPrepared('INSERT INTO url (hash, url) VALUES(?, ?)', [
+        'r7r2u6m',
+        'http://google.com',
+    ]);
+};
 
 describe('koa server', () => {
     let server: any;
     let db: UrlyDatabaseConnection;
 
     beforeEach(async () => {
-        if (db) {
-            //await db.close();
-        }
         fs.ensureDirSync(TMP_PATH);
         fs.copyFileSync(DB_PATH, TMP_DB_PATH);
 
-        db = new UrlyDatabaseConnection(TMP_DB_PATH);
+        db = new UrlyDatabaseConnection(DB_MEMORY_PATH);
         await db.init();
+
+        await seedDb(db);
 
         const app = initServer(db);
         server = app.callback();
@@ -120,7 +133,7 @@ describe('koa server', () => {
                 );
             });
 
-            xit('should generate and save a shorten URL when a valid URL is supplied', async () => {
+            it('should generate and save a shorten URL when a valid URL is supplied', async () => {
                 const inputUrl = 'http://my.google.com';
                 const expectedShortUrl = /^http:\/\/localhost:3000\//;
                 const response: any = await request(server)
