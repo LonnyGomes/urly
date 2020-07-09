@@ -1,13 +1,7 @@
 import request from 'supertest';
 import { initServer } from '../src/server';
 import { UrlyDatabaseConnection } from '../src/db/db-connection';
-import * as path from 'path';
-import * as fs from 'fs-extra';
 
-const FIXTURE_PATH = path.resolve(__dirname, 'fixtures');
-const DB_PATH = path.resolve(FIXTURE_PATH, 'db', 'urly.db');
-const TMP_PATH = path.resolve(FIXTURE_PATH, 'tmp');
-const TMP_DB_PATH = path.resolve(TMP_PATH, 'urly.db');
 const DB_MEMORY_PATH = ':memory:'; // use_in memory db
 const EXPECTED_HASH = 'r7r2u6m';
 const EXPECTED_URL = 'http://google.com';
@@ -30,9 +24,6 @@ describe('koa server', () => {
     let db: UrlyDatabaseConnection;
 
     beforeEach(async () => {
-        fs.ensureDirSync(TMP_PATH);
-        fs.copyFileSync(DB_PATH, TMP_DB_PATH);
-
         db = new UrlyDatabaseConnection(DB_MEMORY_PATH);
         await db.init();
 
@@ -40,10 +31,6 @@ describe('koa server', () => {
 
         const app = initServer(db);
         server = app.callback();
-    });
-
-    afterEach(() => {
-        fs.removeSync(TMP_PATH);
     });
 
     describe('app', () => {
