@@ -9,6 +9,8 @@ const DB_PATH = path.resolve(FIXTURE_PATH, 'db', 'urly.db');
 const TMP_PATH = path.resolve(FIXTURE_PATH, 'tmp');
 const TMP_DB_PATH = path.resolve(TMP_PATH, 'urly.db');
 const DB_MEMORY_PATH = ':memory:'; // use_in memory db
+const EXPECTED_HASH = 'r7r2u6m';
+const EXPECTED_URL = 'http://google.com';
 
 const seedDb = async (db: UrlyDatabaseConnection) => {
     // create schema
@@ -18,8 +20,8 @@ const seedDb = async (db: UrlyDatabaseConnection) => {
 
     // insert test data
     await db.dbRunPrepared('INSERT INTO url (hash, url) VALUES(?, ?)', [
-        'r7r2u6m',
-        'http://google.com',
+        EXPECTED_HASH,
+        EXPECTED_URL,
     ]);
 };
 
@@ -78,8 +80,8 @@ describe('koa server', () => {
             });
 
             it('should redirect to URL given proper hash', async () => {
-                const inputShortId = 'r7r2u6m';
-                const expectedUrl = 'http://google.com';
+                const inputShortId = EXPECTED_HASH;
+                const expectedUrl = EXPECTED_URL;
                 const response: any = await request(server).get(
                     `/${inputShortId}`
                 );
@@ -107,7 +109,7 @@ describe('koa server', () => {
             });
 
             it('should return a URL when a valid hash is supplied', async () => {
-                const expectedHashKey = 'r7r2u6m';
+                const expectedHashKey = EXPECTED_HASH;
                 const expectedResponse = {
                     status: true,
                     fullUrl: 'https://www.google.com',
