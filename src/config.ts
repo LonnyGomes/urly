@@ -2,13 +2,26 @@ import * as dotenv from 'dotenv';
 
 const DEFAULT_PORT = 3000;
 const DEFAULT_BASE_URL = `http://localhost:${DEFAULT_PORT}/`;
+export interface ConfigOptions {
+    enableDotEnv?: boolean;
+}
 
-dotenv.config();
+const defaultOpts: ConfigOptions = {
+    enableDotEnv: true,
+};
 
-const PORT = process.env.PORT || DEFAULT_PORT;
-const BASE_URL = process.env.BASE_URL || DEFAULT_BASE_URL;
+export const UrlyConfig = (inputOpts?: ConfigOptions) => {
+    const opts = Object.assign(defaultOpts, inputOpts || {});
 
-export const config = {
-    PORT: +PORT,
-    BASE_URL,
+    if (opts.enableDotEnv) {
+        dotenv.config();
+    }
+
+    const PORT = process.env.PORT || DEFAULT_PORT;
+    const BASE_URL = process.env.BASE_URL || DEFAULT_BASE_URL;
+
+    return {
+        PORT: +PORT,
+        BASE_URL,
+    };
 };
