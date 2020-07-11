@@ -8,7 +8,7 @@ This project uses [Koa](https://koajs.com) to implement a light-weight URL short
 
 ## Getting starting
 
-You can get started by install the dependencies and running the dev server.
+To get started, install the dependencies and running the dev server.
 
 ```bash
 npm install
@@ -54,6 +54,22 @@ Creates post shorten
 
 ```bash
 curl http://localhost:3000/api/url/ -X POST -H "Content-Type: application/json" -d '{"fullUrl": "https://asf.com"}'
+```
+
+## Debugging Output
+
+This project uses the [debug](https://www.npmjs.com/package/debug) package to allow you to selectively display debug messages. The debug output depends on the `DEBUG` environment variable. If you set the value to `*` you will see all the debug information but you can optionally fine-tune what is displayed. Below are a few examples:
+
+**Displaying all debug output while running the serve**
+
+```bash
+DEBUG=* npm start
+```
+
+**Displaying Database debug output while running unit tests**
+
+```bash
+DEBUG=db:* npm run test:watch
 ```
 
 ## Unit test

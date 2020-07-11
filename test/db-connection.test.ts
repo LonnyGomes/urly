@@ -32,17 +32,12 @@ describe('UrlyDatabaseConnection', () => {
     });
 
     describe('init', () => {
-        it('should throw error if dbPath is invalid', async () => {
-            const inputPath = 'bogus.db';
+        it('should create a database if it does not exist', async () => {
+            const inputPath = path.resolve(TMP_PATH, 'bogus.db');
             const conn = new UrlyDatabaseConnection(inputPath);
 
-            expect.assertions(1);
-
-            try {
-                const db: Database = await conn.init();
-            } catch (error) {
-                expect(error.message).toMatch(/unable to open database file/);
-            }
+            const db: Database = await conn.init();
+            expect(db.run).toBeDefined();
         });
 
         it('should initialize database', async () => {
@@ -144,5 +139,27 @@ describe('UrlyDatabaseConnection', () => {
                 expect(error.message).toMatch(/syntax error/);
             }
         });
+    });
+
+    describe('close', () => {
+        it('should throw error if db was not initialized before call', async () => {
+            const conn = new UrlyDatabaseConnection(TMP_DB_PATH);
+
+            expect.assertions(1);
+            try {
+                await conn.close();
+            } catch (error) {
+                expect(error.message).toMatch(/^Database was not initialize$/);
+            }
+        });
+    });
+
+    it('should close a previously initialized database', async () => {
+        const conn = new UrlyDatabaseConnection(TMP_DB_PATH);
+
+        await conn.init();
+        const { message } = await conn.close();
+
+        expect(message).toEqual('Closed database');
     });
 });

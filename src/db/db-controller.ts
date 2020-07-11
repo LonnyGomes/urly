@@ -1,6 +1,9 @@
 import { UrlyDatabaseConnection } from './db-connection';
 import { Shortener } from '../utils/shortener';
 import { URLResultModel } from './models';
+import Debug from 'debug';
+
+const debug = Debug('db:controller');
 
 export class UrlyDatabaseController {
     private _db: UrlyDatabaseConnection;
@@ -32,39 +35,39 @@ export class UrlyDatabaseController {
      */
     async getByURL(url: string): Promise<URLResultModel> {
         const query = `SELECT * FROM url WHERE url = '${url}'`;
-        const rows = await this._db.dbAll(query);
+        const [result] = await this._db.dbAll(query);
 
-        return rows[0];
+        return result || { hash: '', url: '' };
     }
 
     /**
      * Inserts a new URL and returns the resulting hash
-     * @param url url to shorten
+     * @param fullUrl url to shorten
      * @returns URL results or an empty set
      */
-    async insertURL(url: string): Promise<URLResultModel> {
+    async insertURL(fullUrl: string): Promise<URLResultModel> {
         // Check if the URL is already in the DB
         // If it is return the hash immediately
-        console.log('checking if URL is in DB');
-        const matchingURL = await this.getByURL(url);
-        if (matchingURL) {
-            console.log('URL is in DB');
-            return { hash: matchingURL.hash, url: url };
+        debug('checking if URL is in DB');
+        const { url, hash } = await this.getByURL(fullUrl);
+        if (url && hash) {
+            debug('URL is in DB');
+            return { hash, url };
         }
 
         // Generate a new hash
-        console.log('URL is not in DB');
+        debug('URL is not in DB');
         const acceptableCharacters = 'abcdefghjkmnpqrstuvwxyz23456789';
         const hashLength = 7;
         const shortener = new Shortener(acceptableCharacters, hashLength);
-        const hash = shortener.genHash(hashLength, acceptableCharacters);
+        const newHash = shortener.genHash(hashLength, acceptableCharacters);
 
         // Insert it into the DB
-        console.log('adding has to DB');
+        debug('adding has to DB');
         const query = `INSERT INTO url ('hash', 'url') VALUES (?,?)`;
-        const result = await this._db.dbRunPrepared(query, [hash, url]);
+        await this._db.dbRunPrepared(query, [newHash, fullUrl]);
 
         // Return it
-        return { hash, url };
+        return { hash: newHash, url: fullUrl };
     }
 }

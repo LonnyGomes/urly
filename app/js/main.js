@@ -9,10 +9,16 @@ async function handleFormSubmit(e) {
 
     // Grab the URL and encode it so we can include it in the api request
     const url = urlField.value;
-    const urlEncoded = encodeURIComponent(url);
+    const body = JSON.stringify({ fullUrl: url });
 
     // Make the api request
-    const response = await fetch(`api/url/${urlEncoded}`, { method: 'POST' });
+    const response = await fetch(`api/url/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body,
+    });
     const data = await response.json();
 
     // Add the resulting has to the table and reset the form
@@ -20,14 +26,14 @@ async function handleFormSubmit(e) {
     urlField.value = '';
 }
 
-function displayHash({ hash, url }) {
+function displayHash({ hash, fullUrl, shortUrl }) {
     const tr = document.createElement('tr');
     const urlCell = document.createElement('td');
-    urlCell.innerHTML = url;
+    urlCell.innerHTML = fullUrl;
 
     const shortenedCell = document.createElement('td');
     const shortenedURL = document.createElement('a');
-    shortenedURL.href = `../${hash}`;
+    shortenedURL.href = `${shortUrl}`;
     shortenedURL.textContent = hash;
     shortenedURL.target = '_blank';
     shortenedCell.appendChild(shortenedURL);
