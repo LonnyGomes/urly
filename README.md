@@ -8,13 +8,7 @@ This project uses [Koa](https://koajs.com) to implement a light-weight URL short
 
 ## Getting starting
 
-To get started, you need to copy the sqlite database to the proper location
-
-```bash
-cp test/fixtures/db/urly.db src/db/
-```
-
-Next, install the dependencies and running the dev server.
+To get started, install the dependencies and running the dev server.
 
 ```bash
 npm install

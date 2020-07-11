@@ -7,11 +7,6 @@ const EXPECTED_HASH = 'r7r2u6m';
 const EXPECTED_URL = 'http://google.com';
 
 const seedDb = async (db: UrlyDatabaseConnection) => {
-    // create schema
-    await db.dbAll(
-        'CREATE TABLE IF NOT EXISTS url(hash VARCHAR(40) PRIMARY KEY, url VARCHAR(200))'
-    );
-
     // insert test data
     await db.dbRunPrepared('INSERT INTO url (hash, url) VALUES(?, ?)', [
         EXPECTED_HASH,
