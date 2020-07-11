@@ -12,19 +12,33 @@ export class UrlyDatabaseConnection {
         this._dbPath = dbPath;
     }
 
+    private async seedDb() {
+        // create schema
+        await this.dbAll(
+            'CREATE TABLE IF NOT EXISTS url(hash VARCHAR(40) PRIMARY KEY, url VARCHAR(200))'
+        );
+    }
+
     init(): Promise<Database> {
         return new Promise((resolve, reject) => {
             sqlite3.verbose(); // enable verbose debugging
             let db = new Database(
                 this._dbPath,
-                sqlite3.OPEN_READWRITE,
-                (err) => {
+                sqlite3.OPEN_READWRITE | sqlite3.OPEN_CREATE,
+                async (err) => {
                     if (err) {
                         reject(err);
                     } else {
                         debug('connected to sqlite db');
                         this._db = db;
-                        resolve(db);
+
+                        try {
+                            debug('seeding database');
+                            await this.seedDb();
+                            resolve(db);
+                        } catch (seedError) {
+                            reject(seedError);
+                        }
                     }
                 }
             );
