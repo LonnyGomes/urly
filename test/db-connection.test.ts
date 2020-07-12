@@ -85,7 +85,7 @@ describe('UrlyDatabaseConnection', () => {
             expect(results.length).toEqual(0);
         });
 
-        it('should throw error if query return zero results', async () => {
+        it('should throw an error if the query is invalid', async () => {
             const conn = new UrlyDatabaseConnection(TMP_DB_PATH);
 
             expect.assertions(1);
