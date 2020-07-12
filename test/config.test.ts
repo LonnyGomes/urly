@@ -9,6 +9,7 @@ declare namespace NodeJS {
 
 const DEFAULT_PORT = 3000;
 const DEFAULT_BASE_URL = 'http://localhost:3000/';
+const DEFAULT_DB_PATH = 'src/db/urly.db';
 
 describe('config', () => {
     beforeEach(() => {
@@ -63,6 +64,31 @@ describe('config', () => {
             const config = UrlyConfig();
 
             expect(config.BASE_URL).toEqual('https://custom.url.com/');
+        });
+    });
+
+    describe('DB_PATH', () => {
+        beforeEach(() => {
+            delete process.env.DB_PATH;
+        });
+
+        afterEach(() => {
+            delete process.env.DB_PATH;
+        });
+
+        it('should define a default base url', () => {
+            const { UrlyConfig } = require('../src/config');
+            const config = UrlyConfig({ enableDotEnv: false });
+
+            expect(config.DB_PATH).toEqual(DEFAULT_DB_PATH);
+        });
+
+        it('should be overridden by an environment variable', () => {
+            process.env.DB_PATH = 'src/db/custom.db';
+            const { UrlyConfig } = require('../src/config');
+            const config = UrlyConfig();
+
+            expect(config.DB_PATH).toEqual('src/db/custom.db');
         });
     });
 });
