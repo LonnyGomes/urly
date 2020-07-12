@@ -8,7 +8,7 @@ declare namespace NodeJS {
 }
 
 const DEFAULT_PORT = 3000;
-const DEFAULT_BASE_URL = 'http://localhost:3000/';
+const DEFAULT_BASE_URL = 'http://localhost:3000';
 const DEFAULT_DB_PATH = 'src/db/urly.db';
 
 describe('config', () => {

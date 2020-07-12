@@ -1,7 +1,7 @@
 import * as dotenv from 'dotenv';
 
 const DEFAULT_PORT = 3000;
-const DEFAULT_BASE_URL = `http://localhost:${DEFAULT_PORT}/`;
+const DEFAULT_BASE_URL = `http://localhost:${DEFAULT_PORT}`;
 const DEFAULT_DB_PATH = 'src/db/urly.db';
 
 export interface ConfigOptions {
