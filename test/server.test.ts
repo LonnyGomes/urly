@@ -2,6 +2,10 @@ import request from 'supertest';
 import { initServer } from '../src/server';
 import { UrlyDatabaseConnection } from '../src/db/db-connection';
 
+// stub dotenv module to ignore any existing config settings in `.env` file
+import * as dotenv from 'dotenv';
+jest.mock('dotenv');
+
 const DB_MEMORY_PATH = ':memory:'; // use_in memory db
 const EXPECTED_HASH = 'r7r2u6m';
 const EXPECTED_URL = 'http://google.com';
@@ -119,7 +123,7 @@ describe('koa server', () => {
 
             it('should generate and save a shorten URL when a valid URL is supplied', async () => {
                 const inputUrl = 'http://my.google.com';
-                const expectedShortUrl = /^http:\/\/localhost:3000\//;
+                const expectedShortUrl = /^http:\/\/localhost:3000/;
                 const response: any = await request(server)
                     .post('/api/url/')
                     .send({ fullUrl: inputUrl })

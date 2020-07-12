@@ -23,6 +23,37 @@ You can chose a different port by defining the `PORT` environment variable.
 PORT=3030 npm run start:dev
 ```
 
+## Configuration
+
+The configuration parameters can be set either by an environment variable or a through a `.env` file stored in the root of the project. Below are the configurable parameters along with their default values:
+
+| Parameter | Description                                                         | Default               |
+| --------- | ------------------------------------------------------------------- | --------------------- |
+| PORT      | HTTP port server listens on                                         | 3000                  |
+| BASE_URL  | url to use as the base shortener                                    | http://localhost:3000 |
+| DB_PATH   | path to store the db. If the file doesn't exist, it will be created | `src/db/urly.db`      |
+
+**Example .env file**
+
+A `.env` file can store all customized configurations
+
+```
+BASE_URL="https://my.customurl.com"
+
+PORT=2600
+
+# comments are allowed
+DB_PATH=src/db/new.db
+```
+
+**Example using environment variables**
+
+The following defines the base URL that is used when generating a shortened link:
+
+```bash
+BASE_URL=https://myurl.com npm start
+```
+
 ## API
 
 This is basic REST API documentation. We eventually will move this to use swagger.

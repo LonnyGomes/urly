@@ -3,7 +3,9 @@ import Router from '@koa/router';
 import { UrlyDatabaseController } from '../db/db-controller';
 import { UrlyDatabaseConnection } from '../db/db-connection';
 import { IRouteController } from './route-controller.model';
+import { UrlyConfig } from '../config';
 
+const config = UrlyConfig();
 export class ApiController implements IRouteController {
     private _dbController: UrlyDatabaseController;
     private _router: Router;
@@ -77,7 +79,7 @@ export class ApiController implements IRouteController {
                 ctx.body = {
                     hash,
                     fullUrl,
-                    shortUrl: `http://localhost:3000/${hash}`, // TEMP implementation
+                    shortUrl: `${config.BASE_URL}/${hash}`, // TEMP implementation
                 };
             } else {
                 ctx.status = 400;
