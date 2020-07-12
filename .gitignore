@@ -107,3 +107,6 @@ dist
 lib
 
 test/fixtures/tmp
+
+# Ignore any created db files
+src/db/*.db
