@@ -105,3 +105,8 @@ dist
 
 # Typescript builds
 lib
+
+test/fixtures/tmp
+
+# Ignore any created db files
+src/db/*.db

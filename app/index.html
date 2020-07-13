@@ -1,13 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
     <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="css/style.css" />
-        <title>Urly</title>
+        <title>URLY-POC</title>
     </head>
+
     <body>
-        <h1>TODO: add content</h1>
+        <h1>URLY POC</h1>
+        <h3>Shorten a URL:</h3>
+        <form id="url-form">
+            <input type="text" id="url" placeholder="url" />
+            <input type="submit" />
+        </form>
+
+        <div id="recent-urls">
+            <h3>Recently Shortened URLs:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Original</th>
+                        <th>Shortened</th>
+                    </tr>
+                </thead>
+                <tbody id="url-table"></tbody>
+            </table>
+        </div>
+
         <script src="js/main.js"></script>
     </body>
 </html>

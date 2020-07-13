@@ -1,38 +1,101 @@
 import { Context, Next } from 'koa';
-
 import Router from '@koa/router';
+import { UrlyDatabaseController } from '../db/db-controller';
+import { UrlyDatabaseConnection } from '../db/db-connection';
+import { IRouteController } from './route-controller.model';
+import { UrlyConfig } from '../config';
 
-export class ApiController {
-    public static async getUrl(ctx: Context): Promise<void> {
-        const fullUrl = 'https://www.google.com'; // TEMP implementation
-        ctx.status = 200;
-        ctx.body = { status: true, fullUrl };
+const config = UrlyConfig();
+export class ApiController implements IRouteController {
+    private _dbController: UrlyDatabaseController;
+    private _router: Router;
+
+    constructor(db: UrlyDatabaseConnection) {
+        this._dbController = new UrlyDatabaseController(db);
+        this._router = this.initRouter();
     }
 
-    public static async postUrl(ctx: Context): Promise<void> {
-        const shortId = '78fd82'; // TEMP implementation
+    initRouter(): Router {
+        // Define API routes
+        const router = new Router();
+
+        router.get('/url/:shortId', this.getUrl.bind(this));
+        router.post('/url/', this.postUrl.bind(this));
+        router.all('/(.*)', this.invalidMessage.bind(this));
+        router.all('/(.*)/(.*)', this.invalidMessage.bind(this));
+
+        return router;
+    }
+
+    public get router(): Router {
+        return this._router;
+    }
+
+    public get controller(): UrlyDatabaseController {
+        return this._dbController;
+    }
+
+    public async getUrl(ctx: Context): Promise<void> {
+        const fullUrl = 'https://www.google.com'; // TEMP implementation
+
+        const { shortId } = ctx.params;
+
+        if (!shortId) {
+            throw new Error('shortId not supplied');
+        }
+
+        // TODO: sanitize shortId
+        const result = await this._dbController.getByHash(shortId);
+
+        if (result && result.url) {
+            ctx.status = 200;
+            ctx.body = { status: true, fullUrl };
+        } else {
+            ctx.status = 400;
+            ctx.body = {
+                status: false,
+                message: `URL not found for ${shortId}`,
+            };
+        }
+    }
+
+    public async postUrl(ctx: Context): Promise<void> {
         const { fullUrl } = ctx.request.body;
 
         if (!fullUrl) {
-            ctx.status = 403;
-            return Promise.reject({
-                status: false,
+            ctx.status = 400;
+            ctx.body = {
                 message: 'Missing fullUrl parameter',
-            });
+            };
+            return;
         }
 
-        ctx.status = 200;
-        ctx.body = {
-            status: true,
-            fullUrl,
-            shortUrl: `https://baseurl.me/${shortId}`, // TEMP implementation
-        };
+        try {
+            // TODO: sanitize input URL
+            const { hash } = await this._dbController.insertURL(fullUrl);
+
+            if (hash) {
+                ctx.status = 200;
+                ctx.body = {
+                    hash,
+                    fullUrl,
+                    shortUrl: `${config.BASE_URL}/${hash}`, // TEMP implementation
+                };
+            } else {
+                ctx.status = 400;
+                ctx.body = {
+                    message: 'Failed to generate hash',
+                };
+            }
+        } catch (error) {
+            ctx.status = 500;
+            ctx.body = {
+                message: error.message,
+            };
+        }
     }
 
-    public static async invalidMessage(
-        ctx: Context,
-        next: Next
-    ): Promise<void> {
+    public async invalidMessage(ctx: Context, next: Next): Promise<void> {
         if (ctx.status === 404) {
             ctx.status = 200;
             ctx.body = { status: false, message: 'Invalid endpoint' };
@@ -41,11 +104,3 @@ export class ApiController {
         }
     }
 }
-
-// Define API routes
-export const apiRouter = new Router();
-
-apiRouter.get('/url/:fullUrl', ApiController.getUrl);
-apiRouter.post('/url/', ApiController.postUrl);
-apiRouter.all('/(.*)', ApiController.invalidMessage);
-apiRouter.all('/(.*)/(.*)', ApiController.invalidMessage);

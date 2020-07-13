@@ -21,13 +21,13 @@ export class Shortener {
         return this._hashLen;
     }
 
-    public genHash(length: number, acceptableCharacters: string): string {
+    public genHash(): string {
         // Build an array of random characters
         const randomChars = [];
-        for (let i = 0; i < length; i++) {
+        for (let i = 0; i < this._hashLen; i++) {
             randomChars.push(
-                acceptableCharacters[
-                    this.randNum(0, acceptableCharacters.length - 1)
+                this._hashChars[
+                    this.randNum(0, this._hashChars.length - 1)
                 ]
             );
         }

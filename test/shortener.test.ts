@@ -28,15 +28,15 @@ describe('Shortener', () => {
     });
 
     describe('genHash', () => {
-        const hashChars = Shortener.DEFAULT_ACCEPTABLE_CHARS;
-
         it('should generate hash of specified length', () => {
             let hashLen = 4;
-            let results = shortener.genHash(hashLen, hashChars);
+            shortener = new Shortener(undefined, hashLen);
+            let results = shortener.genHash();
             expect(results.length).toEqual(hashLen);
 
             hashLen = 10;
-            results = shortener.genHash(hashLen, hashChars);
+            shortener = new Shortener(undefined, hashLen);
+            results = shortener.genHash();
             expect(results.length).toEqual(hashLen);
         });
     });
