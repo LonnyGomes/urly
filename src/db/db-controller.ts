@@ -60,7 +60,7 @@ export class UrlyDatabaseController {
         const acceptableCharacters = 'abcdefghjkmnpqrstuvwxyz23456789';
         const hashLength = 7;
         const shortener = new Shortener(acceptableCharacters, hashLength);
-        const newHash = shortener.genHash(hashLength, acceptableCharacters);
+        const newHash = shortener.genHash();
 
         // Insert it into the DB
         debug('adding has to DB');
